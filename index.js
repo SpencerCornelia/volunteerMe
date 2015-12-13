@@ -69,11 +69,16 @@ app.post("/login", function (req, res) {
 	});
 });
 
-app.post("/users", function (req, res) {
+app.post("/signup", function (req, res) {
 	var user = req.body.user;
 
-	db.User.createSecure(user.firstName, user.lastName, user.email, user.password, user.location, function() {
-		res.send("signed up!");
+	db.User.createSecure(user.firstName, user.lastName, user.email, user.password, user.location, function(err, user) {
+		if (user) {
+			req.login(user);
+			res.redirect("/profile");
+		} else {
+			res.redirect("/signup");
+		};
 	});
 })
 
