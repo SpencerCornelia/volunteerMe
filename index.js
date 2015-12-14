@@ -57,8 +57,17 @@ app.get("/login", function (req, res) {
 
 app.get("/profile", function (req, res) {
 	req.currentUser(function (err, user) {
-		res.send("welcome", user.email);
+		if (!err) {
+			res.send("welcome " + user.firstName);
+		} else {
+			res.redirect("/login");
+		}	
 	})
+});
+
+app.get("/logout", function (req, res) {
+	req.logout();
+	res.redirect("/");
 });
 
 app.post("/login", function (req, res) {
