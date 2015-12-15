@@ -58,7 +58,7 @@ app.get("/login", function (req, res) {
 app.get("/profile", function (req, res) {
 	req.currentUser(function (err, user) {
 		if (!err) {
-			res.send("welcome " + user.firstName);
+			res.send(user);
 		} else {
 			res.redirect("/login");
 		}	
@@ -81,13 +81,13 @@ app.post("/login", function (req, res) {
 
 app.post("/signup", function (req, res) {
 	var user = req.body.user;
-
-	db.User.createSecure(user.firstName, user.lastName, user.email, user.password, user.location, function(err, user) {
+	db.User.createSecure(user.firstName, user.lastName, user.location, user.email, user.password, function(err, user) {
 		if (user) {
 			req.login(user);
 			res.redirect("/profile");
 		} else {
 			res.redirect("/signup");
+			console.log(err);
 		};
 	});
 })

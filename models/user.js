@@ -8,14 +8,13 @@ var userSchema = new Schema({
 	lastName: { type: String, required: true },
 	email: String,
 	passwordDigest: { type: String, required: true },
-	location: { type: Number, max: 5 }
+	location: { type: Number }
 });
 
-userSchema.statics.createSecure = function (firstName, lastName, email, password, location, cb) {
+userSchema.statics.createSecure = function (firstName, lastName, location, email, password, cb) {
   var that = this;
   bcrypt.genSalt(function (err, salt) {
     bcrypt.hash(password, salt, function (err, hash) {
-      console.log("this is the createSecure hash: " + hash);
       that.create({
       	firstName: firstName,
       	lastName: lastName,
