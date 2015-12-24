@@ -17,6 +17,7 @@ app.use(session({
 	saveUninitialized: true
 }))
 
+
 var views = path.join(__dirname, "views");
 
 app.get("/", function (req, res) {
@@ -27,16 +28,15 @@ app.get("/", function (req, res) {
 app.use("/", function (req, res, next) {
 	req.login = function (user) {
 		req.session.userId = user._id;
+		req.user = user;
+		return user;
 	};
 
 	req.currentUser = function (cb) {
+		var userId = req.session.userId;
 		db.User.findOne({
-			_id: req.session.userId
-		},
-		function (err, user) {
-			req.user = user;
-			cb(null, user);
-		})
+			_id: userId
+		}, cb);
 	};
 
 	req.logout = function () {
@@ -58,12 +58,19 @@ app.get("/login", function (req, res) {
 app.get("/profile", function (req, res) {
 	req.currentUser(function (err, user) {
 		if (!err) {
-			res.send(user);
+			currentUser = user;
+			res.sendFile(path.join(views, "/profile.html"));
 		} else {
 			res.redirect("/login");
 		}	
 	})
 });
+
+var currentUser;
+app.get("/currentUser", function (req, res) {
+	console.log("current user is: ", currentUser);
+	res.send(currentUser);
+})
 
 app.get("/logout", function (req, res) {
 	req.logout();
@@ -74,8 +81,12 @@ app.post("/login", function (req, res) {
 	var user = req.body.user;
 
 	db.User.authenticate(user.email, user.password, function (err, user) {
-		req.login(user);
-		res.redirectTo("/profile");
+		if (!err) {
+			req.login(user);
+			res.redirectTo("/profile");
+		} else {
+			res.redirect("/login");
+		};
 	});
 });
 
