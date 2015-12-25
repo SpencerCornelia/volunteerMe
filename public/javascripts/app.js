@@ -1,6 +1,8 @@
 $(function() {
 	$.getJSON("/currentUser", function (data) {
-		$("#data").text(data.firstName);
+		$("#firstNameData").text(data.firstName);
+		$("#lastNameData").text(data.lastName);
+		$("#locationData").text(data.location);
 	});
 
 
